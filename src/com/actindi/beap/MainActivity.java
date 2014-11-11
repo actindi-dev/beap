@@ -12,8 +12,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends Activity {
 
@@ -134,8 +137,8 @@ public class MainActivity extends Activity {
 
 		// ロケーションリスナーを設定
 		locationManager.requestLocationUpdates(provider, // プロバイダー
-				1000, // リスナーに通知する最小時間間隔
-				1, // リスナーに通知する最小距離間隔
+				1000, // リスナーに通知する最小時間間隔 ms
+				1, // リスナーに通知する最小距離間隔 meters
 				locationListener); // リスナー
 	}
 
@@ -143,13 +146,20 @@ public class MainActivity extends Activity {
 		MapFragment fragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map);
 		map = fragment.getMap();
-		Log.d("beap", map.toString());
+		if (map == null) {
+			return;
+		}
 
-		// FragmentManager manager = getFragmentManager();
-		// FragmentTransaction transaction = manager.beginTransaction();
-		// MapFragment fragment = new MapFragment();
-		// transaction.add(R.id.content, fragment);
-		// transaction.commit();
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		Location location = locationManager.getLastKnownLocation("gps");
+		LatLng latLng = new LatLng(location.getLatitude(),
+				location.getLongitude());
+		CameraPosition.Builder builder = new CameraPosition.Builder();
+		builder.target(latLng);
+		builder.zoom(15);
+		builder.bearing(180);
+		builder.tilt(70);
+		map.moveCamera(CameraUpdateFactory.newCameraPosition(builder.build()));
 	}
 
 	// int データを 2桁16進数に変換するメソッド
