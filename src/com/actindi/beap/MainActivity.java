@@ -248,17 +248,19 @@ public class MainActivity extends Activity {
 		builder.tilt(defaultTilt());
 		map.moveCamera(CameraUpdateFactory.newCameraPosition(builder.build()));
 
+		Beacon beacon = new Beacon("コーヒークーポン", "いこーよクーポン",
+				"http://iko-yo.net/apps/coupon", Arrays.asList("コーヒー", "クーポン"));
 		Marker marker;
-		marker = map.addMarker(new MarkerOptions().position(latLng));
-		beaconMap
-				.put(marker,
-						new Beacon("コーヒークーポン", "いこーよクーポン",
-								"http://iko-yo.net/apps/coupon", Arrays.asList(
-										"コーヒー", "クーポン")));
-		marker = map.addMarker(new MarkerOptions().position(new LatLng(
-				latLng.latitude - 0.001, latLng.longitude + 0.0005)));
-		beaconMap.put(marker, new Beacon("スーパー特売情報", "スパー情報",
-				"http://super.example.com", Arrays.asList("スーパー", "特売")));
+		marker = map.addMarker(new MarkerOptions().position(latLng).title(
+				beacon.name));
+		beaconMap.put(marker, beacon);
+
+		beacon = new Beacon("スーパー特売情報", "スパー情報", "http://super.example.com",
+				Arrays.asList("スーパー", "特売"));
+		marker = map.addMarker(new MarkerOptions().position(
+				new LatLng(latLng.latitude - 0.001, latLng.longitude + 0.0005))
+				.title(beacon.name));
+		beaconMap.put(marker, beacon);
 
 		map.setOnMapLongClickListener(new OnMapLongClickListener() {
 

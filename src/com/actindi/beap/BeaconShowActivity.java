@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 public class BeaconShowActivity extends Activity {
@@ -27,6 +29,21 @@ public class BeaconShowActivity extends Activity {
 				Beacon.class.getName());
 		TextView textView = (TextView) findViewById(R.id.name);
 		textView.setText(beacon.name);
+		textView = (TextView) findViewById(R.id.appName);
+		textView.setText(beacon.appName);
+		textView = (TextView) findViewById(R.id.appUrl);
+		textView.setText(beacon.appUrl);
+		textView = (TextView) findViewById(R.id.tags);
+		textView.setText(beacon.tags.toString());
+
+		View button = findViewById(R.id.ok);
+		button.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 	}
 
 	@Override

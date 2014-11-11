@@ -13,6 +13,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/appName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/name"
+        android:layout_below="@+id/name"
+        android:layout_marginTop="17dp" />
 
+    <TextView
+        android:id="@+id/appUrl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/appName"
+        android:layout_below="@+id/appName"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:id="@+id/tags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/appUrl"
+        android:layout_below="@+id/appUrl"
+        android:layout_marginTop="24dp" />
+
+    <Button
+        android:id="@+id/ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tags"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
+        android:text="OK" />
 
 </RelativeLayout>
