@@ -61,6 +61,10 @@
             android:name=".BeaconShowActivity"
             android:label="@string/title_activity_beacon_show" >
         </activity>
+        <activity
+            android:name=".BeaconNewActivity"
+            android:label="@string/title_activity_beacon_new" >
+        </activity>
     </application>
 
 </manifest>

@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -86,6 +85,8 @@ public class MainActivity extends Activity {
 	//
 	// }
 	// };
+
+	private static final int BEACON_NEW_RESULT_CODE = 1;
 
 	private final LocationListener locationListener = new LocationListener() {
 
@@ -229,6 +230,19 @@ public class MainActivity extends Activity {
 		// initBluetooth();
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case BEACON_NEW_RESULT_CODE:
+			Beacon beacon = (Beacon) data.getSerializableExtra(Beacon.class
+					.getName());
+			addBeaconToMap(beacon);
+			break;
+		}
+
+	}
+
 	private void initMap() {
 		MapFragment fragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map);
@@ -249,29 +263,30 @@ public class MainActivity extends Activity {
 		map.moveCamera(CameraUpdateFactory.newCameraPosition(builder.build()));
 
 		Beacon beacon = new Beacon("コーヒークーポン", "いこーよクーポン",
-				"http://iko-yo.net/apps/coupon", Arrays.asList("コーヒー", "クーポン"));
-		Marker marker;
-		marker = map.addMarker(new MarkerOptions().position(latLng).title(
-				beacon.name));
-		beaconMap.put(marker, beacon);
+				"http://iko-yo.net/apps/coupon", Arrays.asList("コーヒー", "クーポン"),
+				latLng.latitude, latLng.longitude);
+
+		addBeaconToMap(beacon);
 
 		beacon = new Beacon("スーパー特売情報", "スパー情報", "http://super.example.com",
-				Arrays.asList("スーパー", "特売"));
-		marker = map.addMarker(new MarkerOptions().position(
-				new LatLng(latLng.latitude - 0.001, latLng.longitude + 0.0005))
-				.title(beacon.name));
-		beaconMap.put(marker, beacon);
+				Arrays.asList("スーパー", "特売"), latLng.latitude - 0.001,
+				latLng.longitude + 0.0005);
+		addBeaconToMap(beacon);
 
 		map.setOnMapLongClickListener(new OnMapLongClickListener() {
-
 			@Override
 			public void onMapLongClick(LatLng latLng) {
-				Toast.makeText(MainActivity.this, latLng.toString(),
-						Toast.LENGTH_SHORT).show();
+				Intent intent = new Intent(getApplicationContext(),
+						BeaconNewActivity.class);
+				Beacon beacon = new Beacon();
+				beacon.lat = latLng.latitude;
+				beacon.lng = latLng.longitude;
+				intent.putExtra(Beacon.class.getName(), beacon);
+				startActivityForResult(intent, BEACON_NEW_RESULT_CODE);
 			}
 		});
-		map.setOnMarkerClickListener(new OnMarkerClickListener() {
 
+		map.setOnMarkerClickListener(new OnMarkerClickListener() {
 			@Override
 			public boolean onMarkerClick(Marker marker) {
 				Beacon beacon = beaconMap.get(marker);
@@ -281,16 +296,15 @@ public class MainActivity extends Activity {
 				intent.putExtra(Beacon.class.getName(), beacon);
 				startActivity(intent);
 
-				// StringBuffer sb = new StringBuffer();
-				// sb.append(beacon.name).append(", ").append(beacon.appName)
-				// .append(":").append(beacon.appUrl).append(", ")
-				// .append(beacon.tags);
-				// Toast.makeText(MainActivity.this, sb.toString(),
-				// Toast.LENGTH_SHORT).show();
-
 				return false;
 			}
-
 		});
+	}
+
+	private void addBeaconToMap(Beacon beacon) {
+		LatLng latLng = new LatLng(beacon.lat, beacon.lng);
+		Marker marker = map.addMarker(new MarkerOptions().position(latLng)
+				.title(beacon.name));
+		beaconMap.put(marker, beacon);
 	}
 }

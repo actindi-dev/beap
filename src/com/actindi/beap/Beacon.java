@@ -13,13 +13,19 @@ public class Beacon implements Serializable {
 	public String appUrl = "";
 	public List<String> tags = new ArrayList<String>();
 
+	public double lat;
+	public double lng;
+
 	public Beacon() {
 	}
 
-	public Beacon(String name, String appName, String appUrl, List<String> tags) {
+	public Beacon(String name, String appName, String appUrl,
+			List<String> tags, double lat, double lng) {
 		this.name = name;
 		this.appName = appName;
 		this.appUrl = appUrl;
 		this.tags = tags;
+		this.lat = lat;
+		this.lng = lng;
 	}
 }

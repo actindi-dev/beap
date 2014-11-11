@@ -1,20 +1,23 @@
 package com.actindi.beap;
 
+import java.util.Arrays;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
 
-public class BeaconShowActivity extends Activity {
+public class BeaconNewActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_beacon_show);
+		setContentView(R.layout.activity_beacon_new);
 
 		initialize();
 	}
@@ -26,22 +29,25 @@ public class BeaconShowActivity extends Activity {
 	}
 
 	private void initialize() {
-		Beacon beacon = (Beacon) getIntent().getSerializableExtra(
-				Beacon.class.getName());
-		TextView textView = (TextView) findViewById(R.id.name);
-		textView.setText(beacon.name);
-		textView = (TextView) findViewById(R.id.appName);
-		textView.setText(beacon.appName);
-		textView = (TextView) findViewById(R.id.appUrl);
-		textView.setText(beacon.appUrl);
-		textView = (TextView) findViewById(R.id.tags);
-		textView.setText(TextUtils.join(" ", beacon.tags));
-
-		View button = findViewById(R.id.ok);
+		Button button = (Button) findViewById(R.id.buttonGo);
 		button.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
+				Intent intent = getIntent();
+				Beacon beacon = (Beacon) intent
+						.getSerializableExtra(Beacon.class.getName());
+				EditText editText;
+				editText = (EditText) findViewById(R.id.editName);
+				beacon.name = editText.getText().toString();
+				beacon.appName = ((EditText) findViewById(R.id.editAppName))
+						.getText().toString();
+				beacon.appUrl = ((EditText) findViewById(R.id.editAppUrl))
+						.getText().toString();
+				String s = ((EditText) findViewById(R.id.editTags)).getText()
+						.toString();
+				beacon.tags = Arrays.asList(s.split("[, ]+"));
+
+				setResult(RESULT_OK, intent);
 				finish();
 			}
 		});
@@ -50,7 +56,7 @@ public class BeaconShowActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.beacon_show, menu);
+		getMenuInflater().inflate(R.menu.beacon_new, menu);
 		return true;
 	}
 
