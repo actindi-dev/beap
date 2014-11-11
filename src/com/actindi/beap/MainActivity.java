@@ -163,7 +163,7 @@ public class MainActivity extends Activity {
 								.newCameraPosition(builder.build()));
 
 						// デモデモ
-						if (beaconMap.size() > 2) {
+						if (beaconMap.size() > 2) { // この判定じゃだめみたい。
 							return;
 						}
 						BitmapDescriptor icon = BitmapDescriptorFactory
@@ -217,12 +217,17 @@ public class MainActivity extends Activity {
 
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		Location location = locationManager.getLastKnownLocation("gps");
-		LatLng latLng = new LatLng(location.getLatitude(),
-				location.getLongitude());
+		LatLng latLng = new LatLng(35.6223499, 139.7211395);
+		float bearing = 180;
+		if (location != null) {
+			latLng = new LatLng(location.getLatitude(), location.getLongitude());
+			bearing = location.getBearing();
+		}
+
 		CameraPosition.Builder builder = new CameraPosition.Builder();
 		builder.target(latLng);
 		builder.zoom(defaultZoom());
-		builder.bearing(location.getBearing());
+		builder.bearing(bearing);
 		builder.tilt(defaultTilt());
 		map.moveCamera(CameraUpdateFactory.newCameraPosition(builder.build()));
 
