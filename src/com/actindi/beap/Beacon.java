@@ -1,9 +1,13 @@
 package com.actindi.beap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Beacon {
+public class Beacon implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	public String name = "";
 	public String appName = "";
 	public String appUrl = "";

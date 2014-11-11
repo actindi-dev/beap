@@ -49,13 +49,17 @@
             android:value="AIzaSyCx05PlpR9jvXOeqLvVrkL8jmQUmpNW67E" />
 
         <activity
-            android:name="com.actindi.beap.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".BeaconShowActivity"
+            android:label="@string/title_activity_beacon_show" >
         </activity>
     </application>
 

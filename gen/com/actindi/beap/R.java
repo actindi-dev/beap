@@ -409,7 +409,7 @@ containing a value of this type.
         public static final int powered_by_google_light=0x7f020020;
     }
     public static final class id {
-        public static final int action_settings=0x7f070015;
+        public static final int action_settings=0x7f070016;
         public static final int book_now=0x7f070010;
         public static final int buyButton=0x7f07000a;
         public static final int buy_now=0x7f07000f;
@@ -419,9 +419,10 @@ containing a value of this type.
         public static final int holo_dark=0x7f070005;
         public static final int holo_light=0x7f070006;
         public static final int hybrid=0x7f070004;
-        public static final int map=0x7f070014;
+        public static final int map=0x7f070015;
         public static final int match_parent=0x7f07000c;
         public static final int monochrome=0x7f070013;
+        public static final int name=0x7f070014;
         public static final int none=0x7f070000;
         public static final int normal=0x7f070001;
         public static final int production=0x7f070007;
@@ -436,10 +437,12 @@ containing a value of this type.
         public static final int google_play_services_version=0x7f080000;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
+        public static final int activity_beacon_show=0x7f030000;
+        public static final int activity_main=0x7f030001;
     }
     public static final class menu {
-        public static final int main=0x7f0a0000;
+        public static final int beacon_show=0x7f0a0000;
+        public static final int main=0x7f0a0001;
     }
     public static final class string {
         public static final int accept=0x7f050002;
@@ -550,6 +553,7 @@ containing a value of this type.
         public static final int hello_world=0x7f050024;
         public static final int store_picture_message=0x7f050001;
         public static final int store_picture_title=0x7f050000;
+        public static final int title_activity_beacon_show=0x7f050026;
         /**  Text on a placeholder buy button when Google Play services is not
          available or up-to-date 
          */

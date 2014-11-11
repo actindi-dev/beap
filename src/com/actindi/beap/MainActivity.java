@@ -7,6 +7,7 @@ import java.util.Map;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -272,12 +273,19 @@ public class MainActivity extends Activity {
 			@Override
 			public boolean onMarkerClick(Marker marker) {
 				Beacon beacon = beaconMap.get(marker);
-				StringBuffer sb = new StringBuffer();
-				sb.append(beacon.name).append(", ").append(beacon.appName)
-						.append(":").append(beacon.appUrl).append(", ")
-						.append(beacon.tags);
-				Toast.makeText(MainActivity.this, sb.toString(),
-						Toast.LENGTH_SHORT).show();
+
+				Intent intent = new Intent(getApplicationContext(),
+						BeaconShowActivity.class);
+				intent.putExtra(Beacon.class.getName(), beacon);
+				startActivity(intent);
+
+				// StringBuffer sb = new StringBuffer();
+				// sb.append(beacon.name).append(", ").append(beacon.appName)
+				// .append(":").append(beacon.appUrl).append(", ")
+				// .append(beacon.tags);
+				// Toast.makeText(MainActivity.this, sb.toString(),
+				// Toast.LENGTH_SHORT).show();
+
 				return false;
 			}
 
