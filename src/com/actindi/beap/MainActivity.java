@@ -22,6 +22,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -88,64 +90,23 @@ public class MainActivity extends Activity {
 
 	private static final int BEACON_NEW_RESULT_CODE = 1;
 
-	private final LocationListener locationListener = new LocationListener() {
-
-		// 位置情報が変更されたときに呼び出される
-		@Override
-		public void onLocationChanged(Location location) {
-			if (location == null || map == null) {
-				return;
-			}
-			StringBuffer sb = new StringBuffer();
-
-			if (location != null) {
-				sb.append("緯度：").append(location.getLatitude());
-				sb.append("緯度：").append(location.getLongitude());
-				sb.append("精度：").append(location.getAccuracy());
-				sb.append("標高：").append(location.getAltitude());
-				sb.append("時間：").append(location.getTime());
-				sb.append("速度：").append(location.getSpeed());
-				sb.append("進行方向：").append(location.getBearing());
-				sb.append("プロバイダ：").append(location.getProvider());
-			}
-			Log.d("beap", sb.toString());
-
-			LatLng latLng = new LatLng(location.getLatitude(),
-					location.getLongitude());
-			CameraPosition.Builder builder = new CameraPosition.Builder();
-			builder.target(latLng);
-			builder.zoom(defaultZoom());
-			builder.bearing(location.getBearing());
-			builder.tilt(defaultTilt());
-			map.moveCamera(CameraUpdateFactory.newCameraPosition(builder
-					.build()));
-		}
-
-		// プロバイダが利用不可になった時に呼び出される
-		@Override
-		public void onProviderDisabled(String provider) {
-		}
-
-		// プロバイダが利用可能になった時に呼び出される
-		@Override
-		public void onProviderEnabled(String provider) {
-		}
-
-		// プロバイダ・ステータスが変更された時に呼び出される
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-		}
-	};
+	private final Map<Marker, Beacon> beaconMap = new HashMap<Marker, Beacon>();
 
 	private GoogleMap map;
-	private final Map<Marker, Beacon> beaconMap = new HashMap<Marker, Beacon>();
+
+	private void addBeaconToMap(Beacon beacon) {
+		LatLng latLng = new LatLng(beacon.lat, beacon.lng);
+		Marker marker = map.addMarker(new MarkerOptions().position(latLng)
+				.title(beacon.name));
+		beaconMap.put(marker, beacon);
+	}
 
 	private float defaultTilt() {
 		return 70;
 	}
 
 	private float defaultZoom() {
-		return 17;
+		return 18;
 	}
 
 	private void initGps() {
@@ -167,9 +128,163 @@ public class MainActivity extends Activity {
 
 		// ロケーションリスナーを設定
 		locationManager.requestLocationUpdates(provider, // プロバイダー
-				1000, // リスナーに通知する最小時間間隔 ms
-				1, // リスナーに通知する最小距離間隔 meters
-				locationListener); // リスナー
+				1000, // リスナーに通知する最小時間間隔 ミリ秒
+				1, // リスナーに通知する最小距離間隔 メートル
+				new LocationListener() { // リスナー
+
+					// 位置情報が変更されたときに呼び出される
+					@Override
+					public void onLocationChanged(Location location) {
+						if (location == null || map == null) {
+							return;
+						}
+						StringBuffer sb = new StringBuffer();
+
+						if (location != null) {
+							sb.append("緯度：").append(location.getLatitude());
+							sb.append("緯度：").append(location.getLongitude());
+							sb.append("精度：").append(location.getAccuracy());
+							sb.append("標高：").append(location.getAltitude());
+							sb.append("時間：").append(location.getTime());
+							sb.append("速度：").append(location.getSpeed());
+							sb.append("進行方向：").append(location.getBearing());
+							sb.append("プロバイダ：").append(location.getProvider());
+							Log.d("beap", sb.toString());
+						}
+
+						LatLng latLng = new LatLng(location.getLatitude(),
+								location.getLongitude());
+						CameraPosition.Builder builder = new CameraPosition.Builder();
+						builder.target(latLng);
+						builder.zoom(defaultZoom());
+						builder.bearing(location.getBearing());
+						builder.tilt(defaultTilt());
+						map.moveCamera(CameraUpdateFactory
+								.newCameraPosition(builder.build()));
+
+						// デモデモ
+						if (beaconMap.size() > 2) {
+							return;
+						}
+						BitmapDescriptor icon = BitmapDescriptorFactory
+								.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+						map.addMarker(new MarkerOptions().icon(icon).position(
+								new LatLng(location.getLatitude(), location
+										.getLongitude())));
+					}
+
+					// プロバイダが利用不可になった時に呼び出される
+					@Override
+					public void onProviderDisabled(String provider) {
+					}
+
+					// プロバイダが利用可能になった時に呼び出される
+					@Override
+					public void onProviderEnabled(String provider) {
+					}
+
+					// プロバイダ・ステータスが変更された時に呼び出される
+					@Override
+					public void onStatusChanged(String provider, int status,
+							Bundle extras) {
+					}
+				});
+	}
+
+	private void initialize() {
+		initMap();
+		initGps();
+		// initBluetooth();
+	}
+
+	// @SuppressWarnings("deprecation")
+	// private void initBluetooth() {
+	// BluetoothManager bluetoothManager = (BluetoothManager)
+	// getSystemService(Context.BLUETOOTH_SERVICE);
+	// BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+	// if (bluetoothAdapter != null) {
+	// bluetoothAdapter.startLeScan(mLeScanCallback);
+	// }
+	// }
+
+	private void initMap() {
+		MapFragment fragment = (MapFragment) getFragmentManager()
+				.findFragmentById(R.id.map);
+		map = fragment.getMap();
+		if (map == null) {
+			return;
+		}
+
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		Location location = locationManager.getLastKnownLocation("gps");
+		LatLng latLng = new LatLng(location.getLatitude(),
+				location.getLongitude());
+		CameraPosition.Builder builder = new CameraPosition.Builder();
+		builder.target(latLng);
+		builder.zoom(defaultZoom());
+		builder.bearing(location.getBearing());
+		builder.tilt(defaultTilt());
+		map.moveCamera(CameraUpdateFactory.newCameraPosition(builder.build()));
+
+		if (beaconMap.isEmpty()) {
+			Beacon beacon = new Beacon("コーヒークーポン", "いこーよクーポン",
+					"http://iko-yo.net/apps/coupon", Arrays.asList("コーヒー",
+							"クーポン"), latLng.latitude + 0.0002,
+					latLng.longitude - 0.0002);
+
+			addBeaconToMap(beacon);
+
+			beacon = new Beacon("スーパー特売情報", "スパー情報",
+					"http://super.example.com", Arrays.asList("スーパー", "特売"),
+					latLng.latitude - 0.0008, latLng.longitude + 0.0003);
+			addBeaconToMap(beacon);
+		}
+
+		// // 未登録ビーコン
+		// BitmapDescriptor icon = BitmapDescriptorFactory
+		// .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+		// map.addMarker(new MarkerOptions().icon(icon).position(
+		// new LatLng(latLng.latitude + 0.001, latLng.longitude - 0.0004)));
+
+		map.setOnMapLongClickListener(new OnMapLongClickListener() {
+			@Override
+			public void onMapLongClick(LatLng latLng) {
+				Intent intent = new Intent(getApplicationContext(),
+						BeaconNewActivity.class);
+				Beacon beacon = new Beacon();
+				beacon.lat = latLng.latitude;
+				beacon.lng = latLng.longitude;
+				intent.putExtra(Beacon.class.getName(), beacon);
+				startActivityForResult(intent, BEACON_NEW_RESULT_CODE);
+			}
+		});
+
+		map.setOnMarkerClickListener(new OnMarkerClickListener() {
+			@Override
+			public boolean onMarkerClick(Marker marker) {
+				Beacon beacon = beaconMap.get(marker);
+				if (beacon == null) {
+					Intent intent = new Intent(getApplicationContext(),
+							BeaconNewActivity.class);
+					beacon = new Beacon();
+					beacon.lat = marker.getPosition().latitude;
+					beacon.lng = marker.getPosition().longitude;
+					intent.putExtra(Beacon.class.getName(), beacon);
+					startActivityForResult(intent, BEACON_NEW_RESULT_CODE);
+
+					marker.remove();
+
+					return false;
+				}
+
+				Intent intent = new Intent(getApplicationContext(),
+						BeaconShowActivity.class);
+				intent.putExtra(Beacon.class.getName(), beacon);
+				startActivity(intent);
+
+				return false;
+			}
+		});
 	}
 
 	// int データを 2桁16進数に変換するメソッド
@@ -182,22 +297,25 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case BEACON_NEW_RESULT_CODE:
+			Beacon beacon = (Beacon) data.getSerializableExtra(Beacon.class
+					.getName());
+			addBeaconToMap(beacon);
+			break;
+		}
+
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		initialize();
 	}
-
-	// @SuppressWarnings("deprecation")
-	// private void initBluetooth() {
-	// BluetoothManager bluetoothManager = (BluetoothManager)
-	// getSystemService(Context.BLUETOOTH_SERVICE);
-	// BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-	// if (bluetoothAdapter != null) {
-	// bluetoothAdapter.startLeScan(mLeScanCallback);
-	// }
-	// }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -222,89 +340,5 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		initialize();
-	}
-
-	private void initialize() {
-		initMap();
-		initGps();
-		// initBluetooth();
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case BEACON_NEW_RESULT_CODE:
-			Beacon beacon = (Beacon) data.getSerializableExtra(Beacon.class
-					.getName());
-			addBeaconToMap(beacon);
-			break;
-		}
-
-	}
-
-	private void initMap() {
-		MapFragment fragment = (MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map);
-		map = fragment.getMap();
-		if (map == null) {
-			return;
-		}
-
-		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		Location location = locationManager.getLastKnownLocation("gps");
-		LatLng latLng = new LatLng(location.getLatitude(),
-				location.getLongitude());
-		CameraPosition.Builder builder = new CameraPosition.Builder();
-		builder.target(latLng);
-		builder.zoom(defaultZoom());
-		builder.bearing(location.getBearing());
-		builder.tilt(defaultTilt());
-		map.moveCamera(CameraUpdateFactory.newCameraPosition(builder.build()));
-
-		Beacon beacon = new Beacon("コーヒークーポン", "いこーよクーポン",
-				"http://iko-yo.net/apps/coupon", Arrays.asList("コーヒー", "クーポン"),
-				latLng.latitude, latLng.longitude);
-
-		addBeaconToMap(beacon);
-
-		beacon = new Beacon("スーパー特売情報", "スパー情報", "http://super.example.com",
-				Arrays.asList("スーパー", "特売"), latLng.latitude - 0.001,
-				latLng.longitude + 0.0005);
-		addBeaconToMap(beacon);
-
-		map.setOnMapLongClickListener(new OnMapLongClickListener() {
-			@Override
-			public void onMapLongClick(LatLng latLng) {
-				Intent intent = new Intent(getApplicationContext(),
-						BeaconNewActivity.class);
-				Beacon beacon = new Beacon();
-				beacon.lat = latLng.latitude;
-				beacon.lng = latLng.longitude;
-				intent.putExtra(Beacon.class.getName(), beacon);
-				startActivityForResult(intent, BEACON_NEW_RESULT_CODE);
-			}
-		});
-
-		map.setOnMarkerClickListener(new OnMarkerClickListener() {
-			@Override
-			public boolean onMarkerClick(Marker marker) {
-				Beacon beacon = beaconMap.get(marker);
-
-				Intent intent = new Intent(getApplicationContext(),
-						BeaconShowActivity.class);
-				intent.putExtra(Beacon.class.getName(), beacon);
-				startActivity(intent);
-
-				return false;
-			}
-		});
-	}
-
-	private void addBeaconToMap(Beacon beacon) {
-		LatLng latLng = new LatLng(beacon.lat, beacon.lng);
-		Marker marker = map.addMarker(new MarkerOptions().position(latLng)
-				.title(beacon.name));
-		beaconMap.put(marker, beacon);
 	}
 }

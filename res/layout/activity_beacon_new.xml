@@ -58,7 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView3"
         android:layout_below="@+id/textView3"
-        android:ems="10" />
+        android:ems="10"
+        android:inputType="textUri" />
 
     <TextView
         android:id="@+id/textView4"
